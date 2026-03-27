@@ -17,7 +17,8 @@ public partial class ListaProduto : ContentPage
 	{
 		try
 		{
-			lista.Clear();
+
+            lista.Clear();
 
 			List<Produto> tmp = await App.Db.GetAll();
 
@@ -25,7 +26,7 @@ public partial class ListaProduto : ContentPage
 		}
 		catch (Exception ex)
 		{
-			await DisplayAlert("ops", ex.Message, "OK");
+            await DisplayAlert("ops", ex.Message, "OK");
 		}
 	}
 
@@ -46,7 +47,9 @@ public partial class ListaProduto : ContentPage
 		{
 			string q = e.NewTextValue;
 
-			lista.Clear();
+            lst_produtos.IsRefreshing = true;
+
+            lista.Clear();
 
 			List<Produto> tmp = await App.Db.Search(q);
 
@@ -56,6 +59,10 @@ public partial class ListaProduto : ContentPage
 		{
             await DisplayAlert("ops", ex.Message, "OK");
         }
+        finally
+        {
+            lst_produtos.IsRefreshing = false;
+        }
     }
 
     private void ToolbarItem_Clicked_1(object sender, EventArgs e)
@@ -64,7 +71,7 @@ public partial class ListaProduto : ContentPage
 
 		string msg = $"O total é {soma:C}";
 
-		DisplayAlertAsync("Total dos Produtos", msg, "OK");
+		DisplayAlert("Total dos Produtos", msg, "OK");
     }
 
 	private async void MenuItem_Clicked(object sender, EventArgs e)
@@ -75,7 +82,7 @@ public partial class ListaProduto : ContentPage
 
 			Produto p = selecionado.BindingContext as Produto;
 
-			bool confirm = await DisplayAlertAsync(
+			bool confirm = await DisplayAlert(
 				"Tem certeza?", $"Remover {p.Descricao}?", "Sim", "Não");
 
 			if (confirm)
@@ -86,11 +93,11 @@ public partial class ListaProduto : ContentPage
          }
 		catch (Exception ex)
 		{
-            await DisplayAlertAsync("ops", ex.Message, "OK");
+            await DisplayAlert("ops", ex.Message, "OK");
         }
 	}
 
-	private void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+	private async void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
 	{
 		try
 		{
@@ -105,7 +112,27 @@ public partial class ListaProduto : ContentPage
 
 		catch (Exception ex)
 		{
-			DisplayAlertAsync("ops", ex.Message, "OK");
+			DisplayAlert("ops", ex.Message, "OK");
 		}
 	}
+
+    private async void lst_produtos_Refreshing(object sender, EventArgs e)
+    {
+        try
+        {
+            lista.Clear();
+
+            List<Produto> tmp = await App.Db.GetAll();
+
+            tmp.ForEach(i => lista.Add(i));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("ops", ex.Message, "OK");
+
+        } finally
+		{
+			lst_produtos.IsRefreshing = false;
+		}
+    }
 }
