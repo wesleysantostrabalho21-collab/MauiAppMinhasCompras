@@ -22,12 +22,9 @@ namespace MauiAppMinhasCompras.Helpers
         }
 
 
-        public Task<List<Produto>> Update(Produto p)
+        public Task<int> Update(Produto p)
         {
-            string sql = "UPDATE Produto SET Descricao=?, Quantidade=?, Preco=? WHERE Id=?";
-
-            return _conn.QueryAsync<Produto>
-                (sql, p.Descricao, p.Quantidade, p.Preco, p.Id);
+            return _conn.UpdateAsync(p);
         }
 
         public Task<int> Delete(int id)
@@ -40,14 +37,21 @@ namespace MauiAppMinhasCompras.Helpers
             return _conn.Table<Produto>().ToListAsync();
         }
 
-        public Task<List<Produto>> Search(String q)
+        public Task<List<Produto>> Search(string q)
         {
-            string sql = "SELECT * FROM Produto WHERE descricao LIKE '%" + q + " %'";
-
-            return _conn.QueryAsync<Produto>(sql);
-
+            string sql = "SELECT * FROM Produto WHERE Descricao LIKE ?";
+            return _conn.QueryAsync<Produto>(sql, $"%{q}%");
         }
-
+        
+        public async Task<List<(String Categoria, double TotalGasto)>>
+                GetRelatorioPorCategoria()
+        {
+            return await _conn.QueryAsync<(string Categoria, double TotalGasto)>(@"
+            SELECT Categoria, SUM(Preco * Quantidade) AS TotalGasto
+            FROM Produto
+            GROUP BY Categoria
+          ");
+        }
 
     }
 }

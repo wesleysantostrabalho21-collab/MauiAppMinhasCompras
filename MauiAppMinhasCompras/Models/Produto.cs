@@ -5,55 +5,56 @@ namespace MauiAppMinhasCompras.Models
     public class Produto
     {
         string _descricao;
-        int _quantidade;
+        double _quantidade; // Mudei para double para aceitar KG ou frações
         double _preco;
+        string _categoria; // Campo novo necessário!
 
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        public string Descricao
 
-        
+        public string Descricao
         {
             get => _descricao;
             set
             {
-                if (value == null)
-                {
+                if (string.IsNullOrWhiteSpace(value))
                     throw new Exception("Por favor, preencha a descrição.");
-                }
                 _descricao = value;
             }
         }
-        
+
         public double Quantidade
         {
             get => _quantidade;
             set
             {
-                if (value <= 0) 
-                {
-                    throw new Exception("Por favor, Preencha a Quantidade.");
-                }
-
-                _quantidade = (int)value;
+                if (value <= 0)
+                    throw new Exception("A quantidade deve ser maior que zero.");
+                _quantidade = value;
             }
-
         }
-        public double Preco 
+
+        public double Preco
         {
             get => _preco;
             set
             {
                 if (value <= 0)
-                {
-                    throw new Exception("Por favor, Preço precisa de um valor diferente de 0.");
-                }
-
+                    throw new Exception("O preço deve ser maior que zero.");
                 _preco = value;
-            }       
+            }
         }
 
+        // --- INFORMAÇÕES QUE DEVEM SER INSERIDAS ---
 
-        public double Total { get => Quantidade * Preco; }
+        public string Categoria
+        {
+            get => _categoria;
+            set => _categoria = value;
+        }
+
+        // Propriedade calculada para a ListView (Binding Total)
+        [Ignore] // O SQLite ignora isso, serve apenas para a tela
+        public double Total => Quantidade * Preco;
     }
 }

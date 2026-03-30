@@ -25,7 +25,18 @@
                    Margin="-15, 0, 0, 0"
                    Placeholder="Busca de Produtos"
                    TextChanged="txt_search_TextChanged"/>
-    
+
+        <Picker x:Name="categoriaPicker" Title="Selecionar a Categoria"
+                SelectedIndexChanged="categoriaPicker_SelectedIndexChanged">
+            <Picker.Items>
+                <x:String>Todos</x:String>
+                <x:String>Alimentos</x:String>
+                <x:String>Higiene</x:String>
+                <x:String>Limpeza</x:String>
+            </Picker.Items>
+        </Picker>
+        <Button Text="Gerar Relatório" Clicked="GerarRelatorio_Clicked" />
+
         <Frame Padding="0" Margin="10" VerticalOptions="FillAndExpand">
             <ListView x:Name="lst_produtos" 
                   IsPullToRefreshEnabled="True"

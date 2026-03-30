@@ -135,4 +135,31 @@ public partial class ListaProduto : ContentPage
 			lst_produtos.IsRefreshing = false;
 		}
     }
+
+	private async void categoriaPicker_SelectedIndexChanged(object sender, EventArgs e)
+	{
+		string selectedCategory = categoriaPicker.SelectedItem?.ToString();
+		lista.Clear();
+		 List<Produto> tmp = await App.Db.GetAll();
+
+        if (selectedCategory == "Todos" || string.IsNullOrEmpty(selectedCategory))
+        {
+			tmp.ForEach(i => lista.Add(i));
+		}
+		else
+		{
+            var filtrados = tmp.Where(p => p.Categoria == selectedCategory).ToList();
+            filtrados.ForEach(i => lista.Add(i));
+        }
+	}
+    private async void GerarRelatorio_Clicked(object sender, EventArgs e)
+    {
+		var relatorio = await App.Db.GetRelatorioPorCategoria();
+		string mensagemRelatorio = "";
+		foreach (var item in relatorio)
+		{
+			mensagemRelatorio += $"{item.Categoria}: {item.TotalGasto:C}\n";
+		}
+		await DisplayAlert("Relatório De Gastos por Categoria", mensagemRelatorio, "OK");
+    }
 }
